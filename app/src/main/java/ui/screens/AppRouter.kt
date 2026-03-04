@@ -41,7 +41,7 @@ Edits to make:
 - SCRAP bottom nav bar
 - change "ONLINE" to "IN CALL" or "Waiting for a bite..."
     descriptions and images
-    hahahha
+    hahahha LOL
  */
 
 private enum class Screen {
