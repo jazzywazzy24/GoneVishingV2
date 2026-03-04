@@ -38,9 +38,10 @@ import java.time.LocalDateTime
 
 /*
 Edits to make:
-- add a back button on the top left of the top bar?
-- change the layout of the agents? make each one a dropdown with the personality
+- SCRAP bottom nav bar
+- change "ONLINE" to "IN CALL" or "Waiting for a bite..."
     descriptions and images
+    hahahha
  */
 
 private enum class Screen {
