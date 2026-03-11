@@ -40,7 +40,6 @@ import com.example.gonevishing.ui.theme.GvSurface
 import com.example.gonevishing.ui.theme.GvTurquoise
 
 /* edits to make
-- drop view stats button and screen
 - need automation management?
  */
 
@@ -48,8 +47,7 @@ import com.example.gonevishing.ui.theme.GvTurquoise
 fun HomeScreen(
     timeSpent: Int = 0, //needs real value when available
     currentAgentName: String = "Susan Calico",
-    onTimeWastedClick: () -> Unit = {},
-    onViewStatsClick: () -> Unit = {},
+    onSettingsClick: () -> Unit = {},
     onAutomationManagementClick: () -> Unit = {},
     onRecentActivityClick: () -> Unit = {},
     onAgentManagementClick: () -> Unit = {},
@@ -177,21 +175,24 @@ fun HomeScreen(
 
                 HomeMenuButton(
                     text = "Recent Activity",
-                    onClick = { onRecentActivityClick() }
+                    onClick = { onRecentActivityClick() },
+                    iconRes = R.drawable.recentactivity_icon
                 )
 
                 Spacer(Modifier.height(13.dp))
 
                 HomeMenuButton(
-                    text = "View Statistics",
-                    onClick = onViewStatsClick
+                    text = "Automation Management?",
+                    onClick = onAutomationManagementClick,
+                    iconRes = R.drawable.transcript_icon
                 )
 
                 Spacer(Modifier.height(13.dp))
 
                 HomeMenuButton(
-                    text = "Automation Management",
-                    onClick = onAutomationManagementClick
+                    text = "Settings",
+                    onClick = onSettingsClick,
+                    iconRes = R.drawable.settings_icon
                 )
 
             }
@@ -231,6 +232,7 @@ private fun TimeWastedCard(
 @Composable
 private fun HomeMenuButton(
     text: String,
+    iconRes: Int,
     onClick: () -> Unit,
 ) {
     Surface(
@@ -238,15 +240,31 @@ private fun HomeMenuButton(
         color = Color.White,
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier
-            .width(320.dp)
-            .height(96.dp)
+            .width(300.dp)
+            .height(100.dp)
     ) {
-        Box(contentAlignment = Alignment.Center) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+
             Text(
                 text = text,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Normal,
                 color = GvOnSurface
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = "$text icon",
+                modifier = Modifier.size(55.dp),
+                contentScale = ContentScale.Fit
             )
         }
     }

@@ -38,9 +38,13 @@ import com.example.gonevishing.ui.theme.GvBackground
 import java.time.Duration
 import java.time.LocalDateTime
 
+import androidx.activity.compose.BackHandler
+import android.app.Activity
+import androidx.compose.ui.platform.LocalContext
+
 /*
 Edits to make:
-- might move statusPill to just be a widget in home screen instead
+- might move statusPill to just be a widget in home screen instead?
  */
 
 private enum class Screen {
@@ -57,7 +61,7 @@ private enum class Screen {
 @Composable
 fun AppRouter() {
 
-    var screen by remember { mutableStateOf(Screen.DevMenu) }
+    //var screen by remember { mutableStateOf(Screen.DevMenu) }
     var showSendToAgentOverlay by remember { mutableStateOf(false) }
     var isAgentInCall by remember { mutableStateOf(false) } //real logic later
     val recentCalls = remember {
@@ -69,6 +73,26 @@ fun AppRouter() {
             CallActivity("4", "+44 20 7946 0958", now.minusDays(3), Duration.ofSeconds(133), true),
             CallActivity("5", "+1 (212) 555-0177", now.minusDays(6).minusHours(2), Duration.ofSeconds(305), false),
         )
+    }
+
+    //makes the emulators' "back button" ACTUALLY go back
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    val backStack = remember { mutableStateListOf(Screen.DevMenu) }
+
+    val screen = backStack.last()
+
+    fun navigate(to: Screen) {
+        if (backStack.last() != to) backStack.add(to)
+    }
+
+    BackHandler {
+        if (backStack.size > 1) {
+            backStack.removeAt(backStack.lastIndex)
+        } else {
+            activity?.finish()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -218,50 +242,49 @@ fun AppRouter() {
 
                     Screen.DevMenu ->
                         _root_ide_package_.com.example.gonevishing.ui.screens.DevMenuScreen(
-                            onOpenLogin = { screen = Screen.LoginScreen },
-                            onOpenHome = { screen = Screen.HomeScreen },
+                            onOpenLogin = { navigate(Screen.LoginScreen) },
+                            onOpenHome = { navigate(Screen.HomeScreen) },
                             onOpenSendToAgentOverlay = { showSendToAgentOverlay = true },
-                            onOpenSettingsScreen = { screen = Screen.SettingsScreen },
-                            onOpenFeatureComingSoonScreen = {
-                                screen = Screen.FeatureComingSoonScreen
-                            },
-                            onOpenAgentManagementScreen = { screen = Screen.AgentManagementScreen },
-                            onOpenRecentActivityScreen = { screen = Screen.RecentActivityScreen },
+                            onOpenSettingsScreen = { navigate(Screen.SettingsScreen) },
+                            onOpenFeatureComingSoonScreen = { navigate(Screen.FeatureComingSoonScreen) },
+                            onOpenAgentManagementScreen = { navigate(Screen.AgentManagementScreen) },
+                            onOpenRecentActivityScreen = { navigate(Screen.RecentActivityScreen) },
                         )
 
                     Screen.LoginScreen ->
                         _root_ide_package_.com.example.gonevishing.ui.screens.LoginScreen(
-                            onLoginSuccess = { screen = Screen.HomeScreen },
-                            onForgotPassword = { screen = Screen.FeatureComingSoonScreen }
+                            onLoginSuccess = { navigate(Screen.HomeScreen) },
+                            onForgotPassword = { navigate(Screen.FeatureComingSoonScreen) }
                         )
 
                     Screen.HomeScreen ->
                         HomeScreen(
-                            onAgentManagementClick = { screen = Screen.AgentManagementScreen },
-                            onRecentActivityClick = { screen = Screen.RecentActivityScreen }
+                            onAgentManagementClick = { navigate(Screen.AgentManagementScreen) },
+                            onRecentActivityClick = { navigate(Screen.RecentActivityScreen) },
+                            onSettingsClick = { navigate(Screen.SettingsScreen) }
                         )
 
                     Screen.FeatureComingSoonScreen ->
                         _root_ide_package_.com.example.gonevishing.ui.screens.FeatureComingSoonScreen(
-                            onBack = { screen = Screen.LoginScreen }
-                        )
+                            onBack = { backStack.removeAt(backStack.lastIndex) }                        )
 
                     Screen.SettingsScreen ->
                         SettingsScreen(
                             onSave = { username, email, phone, scamOverlay, notifications, vibration ->
-                                screen = Screen.HomeScreen }
+                                backStack.removeAt(backStack.lastIndex) // after save, go back one
+                            }
                         )
 
                     Screen.AgentManagementScreen ->
-                        AgentManagementScreen (
-                            onBack = { screen= Screen.HomeScreen }
+                        AgentManagementScreen(
+                            onBack = { backStack.removeAt(backStack.lastIndex) }
                         )
 
                     Screen.RecentActivityScreen ->
-                        RecentActivityScreen (
+                        RecentActivityScreen(
                             calls = recentCalls,
-                            onBack = { screen = Screen.HomeScreen },
-                            onViewTranscript = { } //logic later
+                            onBack = { backStack.removeAt(backStack.lastIndex) },
+                            onViewTranscript = { }
                         )
                 }
             }

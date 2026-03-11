@@ -30,6 +30,7 @@ import com.example.gonevishing.ui.theme.*
 /*
 Edits to make:
 - make "account" and "app settings" a dropdown button
+- remove notifications?
  */
 
 
@@ -43,7 +44,8 @@ fun SettingsScreen(
         username: String,
         email: String,
         phone: String,
-        scamOverlay: Boolean,
+        agent: Boolean,
+        //scamOverlay: Boolean,
         notifications: Boolean,
         vibration: Boolean
     ) -> Unit = { _, _, _, _, _, _ -> },
@@ -52,7 +54,8 @@ fun SettingsScreen(
     initialEmail: String = "",
     initialPhone: String = "",
 
-    initialScamOverlayEnabled: Boolean = true,
+    initialAgentEnabled: Boolean = true,
+    //initialScamOverlayEnabled: Boolean = true,
     initialNotificationsEnabled: Boolean = true,
     initialVibrationEnabled: Boolean = false
 ) {
@@ -62,7 +65,8 @@ fun SettingsScreen(
     var phone by remember { mutableStateOf(initialPhone) }
 
     // General settings
-    var scamOverlayEnabled by remember { mutableStateOf(initialScamOverlayEnabled) }
+    var agentEnabled by remember { mutableStateOf(initialAgentEnabled) }
+    //var scamOverlayEnabled by remember { mutableStateOf(initialScamOverlayEnabled) }
     var notificationsEnabled by remember { mutableStateOf(initialNotificationsEnabled) }
     var vibrationEnabled by remember { mutableStateOf(initialVibrationEnabled) }
 
@@ -76,7 +80,7 @@ fun SettingsScreen(
             .navigationBarsPadding()
             .padding(horizontal = 20.dp)
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
 
         SettingsSectionCard(title = "Profile") {
@@ -135,12 +139,26 @@ fun SettingsScreen(
         }
 
         SettingsSectionCard(title = "App Settings") {
+
+            ToggleRow(
+                title = "AI Agent",
+                description = "Receive overlay prompt when a scam call is flagged.",
+                checked = agentEnabled,
+                onCheckedChange = { agentEnabled = it }
+            )
+
+            /*
+            Divider(
+                    color = GvPrimary,
+            )
             ToggleRow(
                 title = "Scam call overlay",
                 description = "Show an overlay when a call is flagged.",
                 checked = scamOverlayEnabled,
                 onCheckedChange = { scamOverlayEnabled = it }
             )
+
+             */
 
             Divider(
                 color = GvPrimary,
@@ -169,7 +187,8 @@ fun SettingsScreen(
                     username,
                     email,
                     phone,
-                    scamOverlayEnabled,
+                    //scamOverlayEnabled,
+                    agentEnabled,
                     notificationsEnabled,
                     vibrationEnabled
                 )
@@ -252,9 +271,9 @@ private fun SettingsSectionCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(10.dp)) {
             Text(text = title, style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(12.dp))
+            //Spacer(Modifier.height(3.dp))
             content()
         }
     }
